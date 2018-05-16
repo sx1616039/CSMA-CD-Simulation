@@ -40,7 +40,7 @@
 </head>
 
 <body>
-
+    
     <table id="ether">
         <tr id="computers">
         </tr>
@@ -51,42 +51,44 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <div class="shadow p-3 mb-5 bg-white rounded">
-                    <form action="">
-                        <div class="form-group">
-                            <label for="">主机选择</label>
-                            <select class="form-control" id="computer">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                <option>6</option>
-                                <option>7</option>
-                                <option>8</option>
-                            </select>
-                        </div>
+                <div class="card">
+                    <div class="card-body">
+                        <form action="">
+                            <div class="form-group">
+                                <label for="">主机选择</label>
+                                <select class="form-control" id="computer">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                </select>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="">目标主机</label>
-                            <select class="form-control" id="aimcomputer">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                <option>6</option>
-                                <option>7</option>
-                                <option>8</option>
-                            </select>
-                        </div>
+                            <div class="form-group">
+                                <label for="">目标主机</label>
+                                <select class="form-control" id="aimcomputer">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                </select>
+                            </div>
 
-                        <div class="form-group">
-                            <label>消息内容</label>
-                            <input class="form-control" type="text" id="sendcontent" placeholder="Hello world">
-                        </div>
-                        <button type="submit" class="btn btn-primary">提交</button>
-                    </form>
+                            <div class="form-group">
+                                <label>消息内容</label>
+                                <input class="form-control" type="text" id="sendcontent" placeholder="Hello world">
+                            </div>
+                            <button type="submit" class="btn btn-primary">提交</button>
+                        </form>
+                    </div>
                 </div>
             </div>
             <div class="col">
@@ -94,7 +96,7 @@
 
                     <div class="card-body">
                         <h4 class="card-title">收到的消息</h4>
-                        <ul id = "messagelist" class="list-group">
+                        <ul id="messagelist" class="list-group">
                         </ul>
                     </div>
                 </div>
@@ -116,7 +118,7 @@
     const WAIT_INTERVAL_HIGH = 200;
     const RETRY_INTERVAL_LOW = 10;
     const RETRY_INTERVAL_HIGH = 50;
-    var CLOCK = 500;
+    var CLOCK = 500; // 睡觉啊
 
 
     class Cell {
@@ -152,14 +154,14 @@
         constructor(id, color, cable) {
             this.id = id;
             this.color = color;
-            this.cable = cable;
+            this.cable = cable; //方块
             this.obj = null;
             this.waiting = false;
             this.messages = [];
             this.sent = 0;
-            this.messagesObj = document.createElement('pre');
-            this.messagesObj.style.color = this.color;
-            document.body.appendChild(this.messagesObj);
+            // this.messagesObj = document.createElement('pre');
+            // this.messagesObj.style.color = this.color;
+            // document.body.appendChild(this.messagesObj);
         }
         // 显示消息
         showMessages() {
@@ -183,6 +185,7 @@
         //接受消息
         receive() {
             var mailbox = this.cable[this.id];
+            //表格处于繁殖状态
             if (mailbox.propagating == true && mailbox.obj.innerText != this.color) {
                 this.messages.push(mailbox.obj.innerText);
                 this.showMessages();
@@ -227,10 +230,10 @@
             }
         }
     }
-
+    // 监听并且消息队列
     function computersListen(arr) {
         for (var pc of arr) {
-            pc.receive();
+            pc.receive(); 
         }
     }
     // 产生-繁殖
@@ -309,7 +312,7 @@
     }
     //主进程，不停循环
     setInterval(function () {
-        computersListen(computers); //绘制地下的消息框
+        //computersListen(computers); //绘制地下的消息框
         // randomComputerSends(computers, 0.1); //由socket模块接管
         propagate(cable);
     }, CLOCK);
@@ -333,7 +336,10 @@
             content = newmsg[2]; //消息内容
             message = sendcomputer + '开始发送'
             NowSend(computers[parseInt(sendcomputer) - 1]); //主机号码是计算机号加一
-            $("#messagelist").append('<li class="list-group-item">'+message+'</li>')
+            $("#messagelist").append('<li class="list-group-item">' + message + '</li>')
+            if($("#computer option:selected").val() == aimcomputer){
+                $("#messagelist").append('<li class="list-group-item list-group-item-success">' + "收到从"+sendcomputer+"发来的消息，内容为"+content + '</li>')
+            }
         });
     });
 
