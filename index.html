@@ -40,7 +40,6 @@
 </head>
 
 <body>
-    
     <table id="ether">
         <tr id="computers">
         </tr>
@@ -84,7 +83,7 @@
 
                             <div class="form-group">
                                 <label>消息内容</label>
-                                <input class="form-control" type="text" id="sendcontent" placeholder="Hello world">
+                                <input value="Hello Baby!" class="form-control" type="text" id="sendcontent" placeholder="Hello world">
                             </div>
                             <button type="submit" class="btn btn-primary">提交</button>
                         </form>
@@ -119,7 +118,9 @@
     const RETRY_INTERVAL_LOW = 10;
     const RETRY_INTERVAL_HIGH = 50;
     var CLOCK = 500; // 睡觉啊
-
+    var sendcomputer = -1;
+    var aimcomputer = -1;
+    var content = "";
 
     class Cell {
         //构造函数
@@ -159,16 +160,15 @@
             this.waiting = false;
             this.messages = [];
             this.sent = 0;
-            // this.messagesObj = document.createElement('pre');
-            // this.messagesObj.style.color = this.color;
-            // document.body.appendChild(this.messagesObj);
         }
         // 显示消息
         showMessages() {
-            // if(this.messages.length == 10) {
-            //     this.messages = this.messages.slice(5, this.messages.length);
-            // }
-            this.messagesObj.innerHTML = this.messages;
+            // this.messagesObj.innerHTML = this.messages;
+            var self_id = (this.id / (CABLE_LENGTH/COMPUTER_NUMBER)) + 1
+            
+            if(self_id == aimcomputer && $("#computer option:selected").val() == aimcomputer){
+                $("#messagelist").append('<li class="list-group-item list-group-item-success">' + "收到从"+sendcomputer+"发来的消息，内容为"+content + '</li>')
+            }
         }
         //发送消息
         send(char) {
@@ -186,8 +186,11 @@
         receive() {
             var mailbox = this.cable[this.id];
             //表格处于繁殖状态
-            if (mailbox.propagating == true && mailbox.obj.innerText != this.color) {
-                this.messages.push(mailbox.obj.innerText);
+            //mailbox.obj.innerText = 当前渲染的颜色
+            console.log(mailbox.propagating)
+            if (mailbox.propagating == true && mailbox.obj.innerText != this.color && mailbox.obj.innerText != 'ERR!') {
+                // console.log(mailbox.obj.innerText)
+                // this.messages.push(mailbox.obj.innerText);
                 this.showMessages();
             }
         }
@@ -312,7 +315,7 @@
     }
     //主进程，不停循环
     setInterval(function () {
-        //computersListen(computers); //绘制地下的消息框
+        computersListen(computers); //绘制地下的消息框
         // randomComputerSends(computers, 0.1); //由socket模块接管
         propagate(cable);
     }, CLOCK);
@@ -337,9 +340,6 @@
             message = sendcomputer + '开始发送'
             NowSend(computers[parseInt(sendcomputer) - 1]); //主机号码是计算机号加一
             $("#messagelist").append('<li class="list-group-item">' + message + '</li>')
-            if($("#computer option:selected").val() == aimcomputer){
-                $("#messagelist").append('<li class="list-group-item list-group-item-success">' + "收到从"+sendcomputer+"发来的消息，内容为"+content + '</li>')
-            }
         });
     });
 
